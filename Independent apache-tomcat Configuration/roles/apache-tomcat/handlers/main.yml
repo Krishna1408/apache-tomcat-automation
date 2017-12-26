@@ -1,0 +1,11 @@
+---
+
+- name: restart apache2
+  service:
+    name: apache2
+    state: restarted
+
+- name: restart tomcat
+  service:
+    name: tomcat
+    state: restarted

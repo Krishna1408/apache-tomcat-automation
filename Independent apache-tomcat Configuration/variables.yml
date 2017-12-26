@@ -1,0 +1,6 @@
+java_home: java-1.8.0-openjdk-amd64
+
+tomcat_url: http://apache.mirror.digitalpacific.com.au/tomcat/tomcat-8/v8.5.24/bin/apache-tomcat-8.5.24.tar.gz
+
+
+

@@ -1,0 +1,8 @@
+package_list:
+- apache2
+- mysql-server
+- default-jdk
+- authbind
+
+
+

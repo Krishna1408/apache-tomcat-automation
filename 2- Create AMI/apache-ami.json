@@ -1,0 +1,35 @@
+{
+    "builders": [
+        {
+            "access_key": "{{user `aws_access_key`}}",
+            "ami_name": "apache-tomcat-{{user `image_version`}}",
+            "instance_type": "{{user `aws_instance_type`}}",
+            "region": "{{user `aws_region`}}",
+            "secret_key": "{{user `aws_secret_key`}}",
+            "source_ami": "{{user `aws_ami_image`}}",
+            "ssh_username": "ubuntu",
+            "tags": {
+                     "Name":"apache-tomcat-{{user `image_version`}}",
+                     "OS_Version": "Ubuntu 16.04",
+                     "Description": "Golden image for apache tomcat"
+                     },
+            "type": "amazon-ebs"
+
+        }
+    ],
+    "provisioners": [
+        {
+          "type": "shell",
+          "inline": [
+              "sleep 20",
+              "sudo apt-get update",
+              "sudo apt-get install python-simplejson -yq",
+              "sudo apt-get install python -yq"
+          ]
+        },
+        {
+            "type": "ansible",
+            "playbook_file": "playbook/main.yml"
+        }
+    ]
+}
