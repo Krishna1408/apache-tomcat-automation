@@ -74,7 +74,7 @@ The following variables can be modified by the user. User need to edit **2-Creat
   - `aws_region`: Region to use Default is ap-southeast-2
   - `aws_ami_image`: Ubuntu ami Id for the specific region.
   - `aws_instance_type`: The instance type with which the ami will be created by packer.
-  - `image_version`: In case more images are created using the same automation this can be used to add versions. Default value is **0.1**AMI created is **Name = apache-tomcat-0.1**
+  - `image_version`: In case more images are created using the same automation this can be used to add versions. Default value is **0.1**. AMI created is **Name = apache-tomcat-0.1**
 
 ```JSON 
 Below is the example config available:
@@ -126,7 +126,7 @@ The following variables can be modified by the user. User need to edit **2-Creat
 
 ### Creating Autoscaling Group using Terraform
 
-Here we are using Terraform to create:
+1. Here we are using Terraform to create:
 - Creates Security Groups
 - Creates public key for user to use with launch configuration.
 - Creates Elastic Load balancer
@@ -134,13 +134,14 @@ Here we are using Terraform to create:
 - Creates policies for Autoscaling group for Increase & Decrease of number of instance as per CPU and Memory usage
 - Creates CPU & Memory based Cloud Watch Metrics to be used with policy of autoscaling group.
 
-Info about Autoscaling Group Created:
+2. Info about Autoscaling Group Created:
 
 - The Desired and Minimum number of instances are 3.
 - The maximum number of instances is 5.
 - One additional instance is created when the CPU or Memory threshold crosses 80% with cool down of 300 seconds.
 - One instance is removed when the CPU or Memory threshold drops below 20%.
 
+3. In the end of terraform run, the ELB DNS is generated as output. That can be used to test the ASG created.
 #### Terraform variables & Files
 
 The following variables can be modified by the user. User need to edit **3- Create ASG/vars.tf** file
@@ -170,4 +171,11 @@ Once all the info is correctly entered in vars.tf file user need to run below fr
 - To check the different resources being created: `terraform plan`
 - To create the resources: `terraform apply`
 
+
+## Testing the final setup
+
+Take the output of ELB DNS created in the last terrafrom run, append clusterjsp to it and hit the url in brouwer:
+http://ELB_DNS_GENERATED/clusterjsp
+
+example: http://apache-elb-993864931.ap-southeast-2.elb.amazonaws.com/clusterjsp/
 
