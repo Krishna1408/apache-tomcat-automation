@@ -1,0 +1,8 @@
+{
+    "aws_access_key": "AKIAIJ6BMMFBMU7IMWRA",
+    "aws_secret_key": "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",
+    "aws_region": "ap-southeast-2",
+    "aws_ami_image": "ami-cab258a8",
+    "aws_instance_type": "t2.small",
+    "image_version" : "0.1"
+}

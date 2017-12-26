@@ -1,0 +1,98 @@
+- name: install packages - apache2, mysql, authbind, java
+  apt: name={{ item }} update_cache=yes state=present
+  with_items:
+    - "{{package_list}}"
+
+- name: install mod_jk
+  apt: name=libapache2-mod-jk state=present
+  notify:
+    - restart apache2
+
+- name: ensure mysql is running and starts on boot
+  service: name=mysql state=started enabled=true
+
+- name: create tomcat group
+  group:
+    state: present
+    name: tomcat
+
+- name: create tomcat user (nobody should login to tomcat account)
+  user:
+    name: tomcat
+    group: tomcat
+    shell: /bin/false
+    home: /opt/tomcat
+
+- name: create directory for tomcat
+  file:
+    path: /opt/tomcat
+    state: directory
+
+- name: download tomcat package
+  get_url: url={{tomcat_url}} dest='/tmp/'
+
+- name: unarchive tomcat package
+  shell: "tar xzvf /tmp/apache-tomcat-8*tar.gz -C /opt/tomcat --strip-components=1"
+
+- name: change tomcat directory permissions
+  file:
+    path: /opt/tomcat
+    state: directory
+    owner: tomcat
+    group: tomcat
+    recurse: yes
+
+- name: change mode for conf directory
+  file:
+    path: /opt/tomcat/conf
+    state: directory
+    owner: tomcat
+    group: tomcat
+    recurse: yes
+    mode: "g+x"
+
+- name: create systemd service file for tomcat
+  template:
+    src: tomcat.service.j2
+    dest: /etc/systemd/system/tomcat.service
+
+- name: Reload systemd daemon & start tomcat
+  systemd:
+    daemon_reload: yes
+    name: tomcat
+    enabled: yes
+    state: started
+
+- name: replace tomcat server.xml
+  template:
+    src: server.xml.j2
+    dest: /opt/tomcat/conf/server.xml
+  notify:
+  - restart tomcat
+
+- name: configure apache
+  replace: dest=/etc/apache2/sites-enabled/000-default.conf regexp='^</VirtualHost>' replace="JkMount /* ajp13_worker \n </VirtualHost>"
+  notify:
+  - restart apache2
+
+- name: setup simple tomcat application
+  get_url: url=https://community.jboss.org/servlet/JiveServlet/download/588259-27006/clusterjsp.war dest='/opt/tomcat/webapps'
+  notify:
+  - restart tomcat
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

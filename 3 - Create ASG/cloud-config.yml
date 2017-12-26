@@ -1,0 +1,9 @@
+#cloud-config
+users:
+  - name: i323809
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA3SDe0dvV/gByuiYXXPv1WQyS8cv7vQ9bYnMwxx105Z+C254+8pHwDn9oKfAla5wbM0izvp0wQ3lUUd2frnvLqpW91zGU0hIaHIrv4uukU64HpahpJxB1PXHTnr/VAZ01QEf96trzGWuDqKLVa/yCKRum//+DsVHdquM3TOwdZt3BXVBVe3dOWe7UqeTDzEZi8ncTgt224mDKGxIW1h53fhSu6H7g0nLXl7RnFFhfw4xuDKGAVFJ6CllQtlKWGxlTpZRsX5e/4HD2smqNl0sCSCNNOpzVp9W88RkPZF8p6cKK4uwDs6vNO62J11wkzFNjW85gZFHzzJwu2e/53swnxw==
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    shell: /bin/bash
+    home: /home/i323809
+    groups: wheel,sudo
