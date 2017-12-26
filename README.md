@@ -52,7 +52,7 @@ The following variables can be modified by the user. User need to edit **1-Creat
 
 #### Running Terraform 
 
-Once all the info is correctly entered in variables.tf file user need to do below:
+Once all the info is correctly entered in variables.tf file user need to run below from **1-Create VPC**:
 - To initialize terraform: `terraform init`  
 - To check the different resources being created: `terraform plan`
 - To create the resources: `terraform apply`
@@ -98,6 +98,7 @@ Go to the directory 2-Create AMI and run:
 To Integrate packer with Ansible:
 1. The ansible code is copied ino the playbook directory inside Create AMI directory
 2. The ansible provisioner is then used to integrate ansible with packer.
+3. Once a system is created with AMI the apache & tomcat services will be up and running.
 
 
 ### Ansible Playbook to install and configure apache & tomcat
@@ -105,10 +106,10 @@ To Integrate packer with Ansible:
 1. The ansible playbook is integrated with Packer. As well same playbook is provided separately "Independent apache-tomcat Configuration.
 2. The ansible version tested is 2.3.1 but playbook should also support 2.4
 3. The playbook does below:
-- Install and configures apache
-- Install and configure tomcat (version 8) and Create tomcat service file.
-- Ensure that only AJP connector is used between Apache & Tomcat.
-- Deploy a sample application "clusterjsp" in the end of automation.
+    - Install and configures apache
+    - Install and configure tomcat (version 8) and Create tomcat service file.
+    - Ensure that only AJP connector is used between Apache & Tomcat.
+    - Deploy a sample application "clusterjsp" in the end of automation.
 
 #### Ansible variables
 The following variables can be modified by the user. User need to edit **2-Create AMI/playbook/variables.yml** file
@@ -121,3 +122,52 @@ The following variables can be modified by the user. User need to edit **2-Creat
 - ansible-playbook main.yml
 3. The ansible logs will be created in **/tmp/ansible.log** file
 4. The ansible configurations are mentioned in "ansible.cfg" file. User can modify them as per need basis.
+
+
+### Creating Autoscaling Group using Terraform
+
+Here we are using Terraform to create:
+- Creates Security Groups
+- Creates public key for user to use with launch configuration.
+- Creates Elastic Load balancer
+- Creates Launch Configuration & Autoscaling Group
+- Creates policies for Autoscaling group for Increase & Decrease of number of instance as per CPU and Memory usage
+- Creates CPU & Memory based Cloud Watch Metrics to be used with policy of autoscaling group.
+
+Info about Autoscaling Group Created:
+
+- The Desired and Minimum number of instances are 3.
+- The maximum number of instances is 5.
+- One additional instance is created when the CPU or Memory threshold crosses 80% with cool down of 300 seconds.
+- One instance is removed when the CPU or Memory threshold drops below 20%.
+
+#### Terraform variables & Files
+
+The following variables can be modified by the user. User need to edit **3- Create ASG/vars.tf** file
+  - `access_key`: AWS access key for user's project
+  - `secret_key`: AWS secret Key for User's project
+  - `aws_region`: Region to use Default is ap-southeast-2
+  - `filter_ami`: The tag name for AMI being used. The default is **apache-tomcat-0.1** (This is also the default tag created by packer)
+  - `subnet_tag_name`: This is the name of Tag's **Key** being used. The default is **Name**.
+  - `subnet_tag_value`: This is the tag's **value** being used. The default is **public_subnet** (This is also the default subnet name created by VPC code)
+  - `instance_type`: The size of instance to be launched with autoscaling group.
+  - `port_22_cidr`: The cidr for the Ip range which will be used for ssh to this instances. (E.g. 103.11.226.0/24)
+  - `max_instance_asg`: The max limit for the instances in autoscaling group. (Default = 5)
+
+For creation of key part:
+1. Enter the public key in **key.pub** file.
+2. If user does not want to create new key.pub then update the "key_name" part of "aws_launch_configuration" part in **3-Create ASG/create_autoscaling_group.tf** file :
+```YAML
+resource "aws_launch_configuration" "apache" {
+  key_name        = "enter_your_key_name"
+}
+```
+
+#### Running Terraform 
+
+Once all the info is correctly entered in vars.tf file user need to run below from **2-Create ASG** directory:
+- To initialize terraform: `terraform init`  
+- To check the different resources being created: `terraform plan`
+- To create the resources: `terraform apply`
+
+
