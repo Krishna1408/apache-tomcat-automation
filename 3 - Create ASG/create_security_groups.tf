@@ -22,6 +22,12 @@ resource "aws_security_group" "apache" {
         protocol = "tcp"
         security_groups = ["${aws_security_group.elb.id}"]
     }
+    egress {
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
 
     vpc_id = "${data.aws_subnet.public_a.vpc_id}"
 
